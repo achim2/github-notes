@@ -4,12 +4,8 @@
   width: 300px;
 
   .file-list {
-    bottom: 60px;
-    left: 0;
+    height: calc(100vh - 110px);
     overflow: auto;
-    position: absolute;
-    right: 0;
-    top: 0;
   }
 
   &__add {
@@ -17,12 +13,9 @@
     color: #fff;
     cursor: pointer;
     border: 0;
-    bottom: 0;
     display: block;
     font-size: 16px;
     height: 60px;
-    left: 0;
-    position: absolute;
     width: 100%;
   }
 }

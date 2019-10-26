@@ -10,18 +10,27 @@
             </header>
 
             <!-- main body -->
-          <List/>
+            <List/>
+            <hr>
+            <Create/>
+            <hr>
+            <Edit/>
+
         </div>
     </div>
 </template>
 
 <script>
   import List from "./components/List";
+  import Create from "./components/Create";
+    import Edit from "./components/Edit";
 
   export default {
     name: 'app',
     components: {
-      List
+      List,
+      Create,
+      Edit
     }
   }
 </script>
