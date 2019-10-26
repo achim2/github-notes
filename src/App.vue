@@ -1,28 +1,31 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+    <div id="app">
+        <div class="github-notes">
+            <header class="main-header">
+                <h1 class="main-header__title">Github notes</h1>
+                <figure class="user-info">
+                    <picture class="user-info__avatar"><img src="https://avatars1.githubusercontent.com/u/499550?v=4" alt="Profile picture"></picture>
+                    <figcaption class="user-info__name">Evan You</figcaption>
+                </figure>
+            </header>
+
+            <!-- main body -->
+          <List/>
+        </div>
+    </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+  import List from "./components/List";
 
-export default {
-  name: 'app',
-  components: {
-    HelloWorld
+  export default {
+    name: 'app',
+    components: {
+      List
+    }
   }
-}
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style lang="scss">
+    @import "./assets/scss/main";
 </style>
