@@ -7,6 +7,7 @@
             <textarea></textarea>
             <div class="file-edit__buttons">
                 <button class="btn btn--positive">Save</button>
+                <router-link to="/" class="btn btn--back">Back</router-link>
             </div>
         </div>
     </div>

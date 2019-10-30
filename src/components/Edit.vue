@@ -5,6 +5,7 @@
             <textarea></textarea>
             <div class="file-edit__buttons">
                 <button class="btn btn--positive">Save</button>
+                <button @click="goBack" class="btn btn--back">Back</button>
             </div>
         </div>
     </div>
@@ -12,7 +13,12 @@
 
 <script>
   export default {
-    name: "Edit"
+    name: "Edit",
+    methods: {
+      goBack () {
+        return this.$router.go(-1);
+      }
+    }
   }
 </script>
 

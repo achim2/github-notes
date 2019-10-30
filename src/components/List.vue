@@ -23,7 +23,7 @@
                 <li>Ipsum.txt</li>
                 <li>2_hu_18bef50f3e4061f6ec800e02f1709f80__9IQ25DOQMBNGRB74_.log</li>
             </ul>
-            <button class="main-sidebar__add">Add new</button>
+            <router-link :to="{name: 'create'}" tag="button" class="main-sidebar__add">Add new</router-link>
         </aside>
         <main class="main-content">
             <div v-if="!selected" class="main-content__empty">Nothing selected</div>
@@ -33,7 +33,7 @@
                         <h2 class="file-item__name">Ipsum.txt</h2>
                         <div class="file-item__buttons">
                             <button class="btn btn--negative">Delete</button>
-                            <button class="btn btn--positive">Edit</button>
+                            <router-link :to="{name: 'edit', params: {id: 1}}" class="btn btn--positive">Edit</router-link>
                         </div>
                     </div>
                     <div class="file-item__content">
