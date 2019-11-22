@@ -1,0 +1,3 @@
+export const FETCH_DATA = 'FETCH_DATA';
+export const CREATE_GIST = 'CREATE_GIST';
+export const FETCH_SELECTED_CONTENT = 'FETCH_SELECTED_CONTENT';
