@@ -4,8 +4,7 @@ import Vuex from 'vuex';
 import api from '../api';
 import axios from 'axios';
 
-import * as mutationTypes from './types/mutationTypes';
-import * as actionTypes from './types/actionTypes';
+import * as types from './types';
 
 Vue.use(Vuex);
 
@@ -21,83 +20,131 @@ export const store = new Vuex.Store({
     selectedContent: null
   },
 
-  getters: {
-    getSpecificGist: state => {
-      let data = state.data.filter(data => data.description === 'Created by Github Notes');
-      return data[0];
-    }
-  },
-
   mutations: {
-    [mutationTypes.SET_LOADING](state, payload) {
+    [types.SET_LOADING](state, payload) {
       state.isLoading = payload;
     },
 
-    [mutationTypes.SET_ERROR](state, payload) {
+    [types.SET_ERROR](state, payload) {
       state.error = payload;
     },
 
-    [mutationTypes.FETCH_DATA](state, payload) {
-      state.data = payload;
+    [types.FETCH_DATA](state, payload) {
+      let gists = payload.filter(gist => gist.description === 'Created by Github Notes');
+      state.data = gists[0];
     },
 
-    [mutationTypes.CREATE_GIST](state, payload) {
+    [types.CREATE_GIST](state, payload) {
       state.data.push(payload);
     },
 
-    [mutationTypes.FETCH_CONTENT](state, payload) {
+    [types.FETCH_CONTENT](state, payload) {
       state.selectedContent = payload;
+    },
+
+    [types.CREATE_FILE](state, payload) {
+      state.data.files = payload.files;
+    },
+
+    [types.REMOVE_FILE](state, payload) {
+      state.data.files = payload.files;
     }
   },
 
   actions: {
-    [actionTypes.FETCH_DATA]({commit, dispatch}) {
-      commit(mutationTypes.SET_LOADING, true);
+    async [types.FETCH_DATA]({commit, dispatch}) {
+      commit(types.SET_LOADING, true);
 
-      api.get('/gists')
+      await api.get('/gists')
         .then(res => {
 
           if (res.data.length > 0) {
-            commit(mutationTypes.FETCH_DATA, res.data);
+            commit(types.FETCH_DATA, res.data);
           } else {
-            dispatch(actionTypes.CREATE_GIST);
+            dispatch(types.CREATE_GIST);
           }
         })
         .catch(err => {
           console.log(err);
         });
 
-      commit(mutationTypes.SET_LOADING, false);
+      commit(types.SET_LOADING, false);
     },
 
-    [actionTypes.CREATE_GIST]({commit}) {
+    [types.CREATE_GIST]({commit}) {
       let data = {
         "description": "Created by Github Notes",
         "public": true,
         "files": {
           "welcome.txt": {
-            "content": "ja gist under github notes"
+            "content": "welcome gist file"
           },
         }
       };
 
       api.post('/gists', data)
         .then(res => {
-          commit(mutationTypes.CREATE_GIST, res.data);
+          commit(types.CREATE_GIST, res.data);
         })
         .catch(err => {
           console.log(err);
         })
     },
 
-    [actionTypes.FETCH_SELECTED_CONTENT]({commit}, param) {
-      axios.get(param)
+    async [types.FETCH_SELECTED_CONTENT]({commit}, param) {
+      await axios.get(param)
         .then(res => {
-            commit(mutationTypes.FETCH_CONTENT, res.data);
+          commit(types.FETCH_CONTENT, res.data);
         })
         .catch(err => {
           console.log(err);
         });
+    },
+
+    [types.CREATE_FILE]({commit}, param) {
+      let gist = this.state.data;
+      let data = {
+        "description": gist.description,
+        "public": gist.public,
+        "files": {
+          [param.name]: {
+            "content": param.content
+          },
+        }
+      };
+
+      return new Promise((resolve, reject) => {
+        api.post(`/gists/${gist.id}`, data)
+          .then(res => {
+            commit(types.CREATE_FILE, res.data);
+            resolve();
+          })
+          .catch(err => {
+            console.log(err);
+            reject();
+          })
+      })
+    },
+
+    //Todo: the github needs few seconds to remove the file, so the page reload loads the file again that is already removed
+    async [types.REMOVE_FILE]({commit}, param) {
+      let gist = this.state.data;
+      let data = {
+        "description": gist.description,
+        "public": gist.public,
+        "files": {
+          [param.filename]: null
+        }
+      };
+
+      await api.post(`/gists/${gist.id}`, data)
+        .then(res => {
+          console.log(res);
+          commit(types.REMOVE_FILE, res.data)
+        })
+        .catch(err => {
+          console.log(err);
+        })
     }
   }
 });

@@ -1,5 +1,5 @@
 <template>
-    <div id="app" v-if="getSpecificGist">
+    <div id="app" v-if="Object.entries(getSpecificGist).length !== 0 && getSpecificGist.constructor === Object">
         <div class="github-notes">
             <header class="main-header">
                 <router-link to="/" tag="h1" class="main-header__title">Github notes</router-link>
@@ -15,20 +15,23 @@
 </template>
 
 <script>
-    import * as actionTypes from './store/types/actionTypes';
+  import * as types from './store/types';
 
   export default {
     name: 'app',
     data() {
-      return {
-      }
+      return {}
     },
-    beforeMount() {
-      this.$store.dispatch(actionTypes.FETCH_DATA);
+    async beforeMount() {
+      try {
+        await this.$store.dispatch(types.FETCH_DATA);
+      }catch (e) {
+        console.log(e)
+      }
     },
     computed: {
       getSpecificGist() {
-        return this.$store.getters.getSpecificGist;
+        return this.$store.state.data;
       }
     },
   }

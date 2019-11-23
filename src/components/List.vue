@@ -1,14 +1,12 @@
 <template>
     <div class="main-body">
         <aside class="main-sidebar">
-            <ul class="file-list" v-for="(file, key) in getSpecificGist.files" :key="key">
-                <li @click="handleSelectedFile(file)"
+            <ul class="file-list">
+                <li v-for="(file) in getSpecificGist.files"
+                    :key="file.id"
+                    @click="handleSelectedFile(file)"
                     :class="{'active': selected === file}">{{file.filename}}
                 </li>
-                <!--                <li>welcome.txt</li>-->
-                <!--                <li>Lorem.txt</li>-->
-                <!--                <li class="is-active">Ipsum.txt</li>-->
-                <!--                <li>2_hu_18bef50f3e4061f6ec800e02f1709f80__9IQ25DOQMBNGRB74_.log</li>-->
             </ul>
             <router-link :to="{name: 'create'}" tag="button" class="main-sidebar__add">Add new</router-link>
         </aside>
@@ -19,7 +17,9 @@
                     <div class="file-item__header">
                         <h2 class="file-item__name">{{selected.filename}}</h2>
                         <div class="file-item__buttons">
-                            <button class="btn btn--negative">Delete</button>
+                            <button class="btn btn--negative"
+                                    @click="handleDelete(selected)">Delete
+                            </button>
                             <router-link :to="{name: 'edit', params: {id: 1}}" class="btn btn--positive">Edit</router-link>
                         </div>
                     </div>
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-  import * as actionTypes from '../store/types/actionTypes';
+  import * as types from '../store/types';
 
   export default {
     name: "List",
@@ -43,19 +43,45 @@
         isActive: null
       }
     },
+    watch: {
+      // selected() {
+      //   console.log('selected watcher');
+      //   let keys = Object.keys(this.getSpecificGist.files);
+      //   this.selected = this.getSpecificGist.files[keys[0]]
+      // },
+    },
     computed: {
       getSpecificGist() {
-        return this.$store.getters.getSpecificGist;
+        return this.$store.state.data;
       },
       getSelectedContent() {
         return this.$store.state.selectedContent;
       }
     },
     methods: {
-      handleSelectedFile(file) {
+      async handleSelectedFile(file) {
         if (this.selected !== file) {
-          this.selected = file;
-          this.$store.dispatch(actionTypes.FETCH_SELECTED_CONTENT, file.raw_url)
+          try {
+            this.selected = file;
+            await this.$store.dispatch(types.FETCH_SELECTED_CONTENT, file.raw_url)
+          } catch (e) {
+            console.log(e)
+          }
+        }
+      },
+      async handleDelete(file) {
+        let keys = Object.keys(this.getSpecificGist.files);
+        const isOk = window.confirm('Are you sure you want to delete this file?');
+        if (isOk) {
+          try {
+            await this.$store.dispatch(types.REMOVE_FILE, file);
+            //Todo: the github needs few seconds to remove the file, so the page reload loads the file again that is already removed
+            this.handleSelectedFile(this.getSpecificGist.files[keys[1]]);
+          } catch (e) {
+            console.log(e)
+          } finally {
+            console.log('finally')
+          }
         }
       }
     }
