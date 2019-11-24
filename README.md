@@ -1,4 +1,5 @@
 # github-notes
+Handle a Github gist files under Gist "Created by Github Notes". Add, edit, remove files.
 
 Make a .env file from the env.example to set the github Auth token. Use basic authentication via OAuth and personal access token. 
 https://developer.github.com/v3/auth/#basic-authentication 
