@@ -1,11 +1,11 @@
 <template>
-    <div id="app" v-if="Object.entries(getSpecificGist).length !== 0 && getSpecificGist.constructor === Object">
+    <div id="app" v-if="Object.entries(getData).length !== 0 && getData.constructor === Object">
         <div class="github-notes">
             <header class="main-header">
                 <router-link to="/" tag="h1" class="main-header__title">Github notes</router-link>
                 <figure class="user-info">
-                    <picture class="user-info__avatar"><img :src="getSpecificGist.owner.avatar_url" alt="Profile picture"></picture>
-                    <figcaption class="user-info__name">{{getSpecificGist.owner.login}}</figcaption>
+                    <picture class="user-info__avatar"><img :src="getData.owner.avatar_url" alt="Profile picture"></picture>
+                    <figcaption class="user-info__name">{{getData.owner.login}}</figcaption>
                 </figure>
             </header>
             <!-- main body -->
@@ -19,9 +19,6 @@
 
   export default {
     name: 'app',
-    data() {
-      return {}
-    },
     async beforeMount() {
       try {
         await this.$store.dispatch(types.FETCH_DATA);
@@ -30,7 +27,7 @@
       }
     },
     computed: {
-      getSpecificGist() {
+      getData() {
         return this.$store.state.data;
       }
     },

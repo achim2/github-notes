@@ -10,7 +10,7 @@
                         @click.prevent="handleSubmit">
                     Save
                 </button>
-                <router-link to="/" class="btn btn--back">Back</router-link>
+                <a @click="goBack" class="btn btn--back">Back</a>
             </div>
         </form>
     </div>
@@ -37,6 +37,9 @@
           })
           .catch(() => console.log('catch'))
           .finally(() => console.log('finally'));
+      },
+      goBack() {
+        this.$router.go(-1);
       }
     }
   }

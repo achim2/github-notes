@@ -20,6 +20,12 @@ export const store = new Vuex.Store({
     selectedContent: null
   },
 
+  getters: {
+    getFileByFilename: state => filename =>{
+      return state.data.files[filename];
+    },
+  },
+
   mutations: {
     [types.SET_LOADING](state, payload) {
       state.isLoading = payload;
@@ -39,7 +45,7 @@ export const store = new Vuex.Store({
     },
 
     [types.FETCH_CONTENT](state, payload) {
-      state.selectedContent = payload;
+      state.data.files[payload.filename].content = payload.content;
     },
 
     [types.CREATE_FILE](state, payload) {
@@ -91,14 +97,22 @@ export const store = new Vuex.Store({
         })
     },
 
-    async [types.FETCH_SELECTED_CONTENT]({commit}, param) {
-      await axios.get(param)
-        .then(res => {
-          commit(types.FETCH_CONTENT, res.data);
-        })
-        .catch(err => {
-          console.log(err);
-        });
+    [types.FETCH_SELECTED_CONTENT]({commit}, param) {
+      return new Promise((resolve, reject) => {
+        axios.get(param.raw_url)
+          .then(res => {
+            commit(types.FETCH_CONTENT, {
+                filename: param.filename,
+                content: res.data
+              }
+            );
+            resolve()
+          })
+          .catch(err => {
+            console.log(err);
+            reject();
+          });
+      })
     },
 
     [types.CREATE_FILE]({commit}, param) {
