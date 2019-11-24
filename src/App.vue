@@ -11,6 +11,9 @@
             <!-- main body -->
             <router-view></router-view>
         </div>
+        <div :class="['loading-layout', {'active': loading}]">
+            <img :src="require('./assets/loader.gif')" alt="Loading..."/>
+        </div>
     </div>
 </template>
 
@@ -22,13 +25,16 @@
     async beforeMount() {
       try {
         await this.$store.dispatch(types.FETCH_DATA);
-      }catch (e) {
+      } catch (e) {
         console.log(e)
       }
     },
     computed: {
       getData() {
         return this.$store.state.data;
+      },
+      loading() {
+        return this.$store.state.isLoading;
       }
     },
   }

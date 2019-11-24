@@ -19,3 +19,30 @@ body {
     text-align: center;
   }
 }
+
+.loading-layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(#000, 0);
+
+  &,
+  img {
+    transition: .3s ease;
+    visibility: hidden;
+  }
+
+  &.active {
+    background-color: rgba(#000, .5);
+
+    &,
+    img {
+      visibility: visible;
+    }
+  }
+}

@@ -21,7 +21,7 @@ export const store = new Vuex.Store({
   },
 
   getters: {
-    getFileByFilename: state => filename =>{
+    getFileByFilename: state => filename => {
       return state.data.files[filename];
     },
   },
@@ -88,6 +88,8 @@ export const store = new Vuex.Store({
         }
       };
 
+      commit(types.SET_LOADING, true);
+
       api.post('/gists', data)
         .then(res => {
           commit(types.CREATE_GIST, res.data);
@@ -95,9 +97,14 @@ export const store = new Vuex.Store({
         .catch(err => {
           console.log(err);
         })
+        .finally(() => {
+          commit(types.SET_LOADING, false);
+        })
     },
 
     [types.FETCH_SELECTED_CONTENT]({commit}, param) {
+      commit(types.SET_LOADING, true);
+
       return new Promise((resolve, reject) => {
         axios.get(param.raw_url)
           .then(res => {
@@ -111,6 +118,9 @@ export const store = new Vuex.Store({
           .catch(err => {
             console.log(err);
             reject();
+          })
+          .finally(() => {
+            commit(types.SET_LOADING, false);
           });
       })
     },
@@ -127,6 +137,8 @@ export const store = new Vuex.Store({
         }
       };
 
+      commit(types.SET_LOADING, true);
+
       return new Promise((resolve, reject) => {
         api.post(`/gists/${gist.id}`, data)
           .then(res => {
@@ -136,6 +148,11 @@ export const store = new Vuex.Store({
           .catch(err => {
             console.log(err);
             reject();
+          })
+          .finally(() => {
+            setTimeout(() => {
+            commit(types.SET_LOADING, false);
+            }, 5000)
           })
       })
     },
@@ -151,13 +168,17 @@ export const store = new Vuex.Store({
         }
       };
 
+      commit(types.SET_LOADING, true);
+
       await api.post(`/gists/${gist.id}`, data)
         .then(res => {
-          console.log(res);
           commit(types.REMOVE_FILE, res.data)
         })
         .catch(err => {
           console.log(err);
+        })
+        .finally(() => {
+          commit(types.SET_LOADING, false);
         })
     }
   }
