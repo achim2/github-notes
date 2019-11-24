@@ -16,8 +16,7 @@ export const store = new Vuex.Store({
       isError: false,
       message: ''
     },
-    isLoading: false,
-    selectedContent: null
+    isLoading: false
   },
 
   getters: {
@@ -63,7 +62,6 @@ export const store = new Vuex.Store({
 
       await api.get('/gists')
         .then(res => {
-
           if (res.data.length > 0) {
             commit(types.FETCH_DATA, res.data);
           } else {
@@ -77,7 +75,7 @@ export const store = new Vuex.Store({
       commit(types.SET_LOADING, false);
     },
 
-    [types.CREATE_GIST]({commit}) {
+    [types.CREATE_GIST]({commit, dispatch}) {
       let data = {
         "description": "Created by Github Notes",
         "public": true,
@@ -93,6 +91,7 @@ export const store = new Vuex.Store({
       api.post('/gists', data)
         .then(res => {
           commit(types.CREATE_GIST, res.data);
+          dispatch(types.FETCH_DATA);
         })
         .catch(err => {
           console.log(err);
@@ -150,9 +149,7 @@ export const store = new Vuex.Store({
             reject();
           })
           .finally(() => {
-            setTimeout(() => {
             commit(types.SET_LOADING, false);
-            }, 5000)
           })
       })
     },

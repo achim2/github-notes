@@ -35,8 +35,7 @@
           .then(() => {
             this.$router.push({name: 'list'});
           })
-          .catch(() => console.log('catch'))
-          .finally(() => console.log('finally'));
+          .catch(() => console.log('catch'));
       },
       goBack() {
         this.$router.go(-1);
