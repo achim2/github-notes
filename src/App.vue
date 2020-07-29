@@ -12,7 +12,7 @@
             <router-view></router-view>
         </div>
         <div :class="['loading-layout', {'active': loading}]">
-            <img :src="require('./assets/loader.gif')" alt="Loading..."/>
+            <img :src="require('./assets/ring-loader.svg')" alt="Loading..."/>
         </div>
     </div>
 </template>

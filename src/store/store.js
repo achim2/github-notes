@@ -35,8 +35,7 @@ export const store = new Vuex.Store({
     },
 
     [types.FETCH_DATA](state, payload) {
-      let gists = payload.filter(gist => gist.description === 'Created by Github Notes');
-      state.data = gists[0];
+      state.data = payload.find(gist => gist.description === 'Created by Github Notes');
     },
 
     [types.CREATE_GIST](state, payload) {
@@ -57,25 +56,24 @@ export const store = new Vuex.Store({
   },
 
   actions: {
-    async [types.FETCH_DATA]({commit, dispatch}) {
+    async [types.FETCH_DATA]({ commit, dispatch }) {
       commit(types.SET_LOADING, true);
 
-      await api.get('/gists')
-        .then(res => {
-          if (res.data.length > 0) {
-            commit(types.FETCH_DATA, res.data);
-          } else {
-            dispatch(types.CREATE_GIST);
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
-
-      commit(types.SET_LOADING, false);
+      try {
+        const res = await api.get('/gists');
+        if (res.data.length > 0) {
+          commit(types.FETCH_DATA, res.data);
+        } else {
+          dispatch(types.CREATE_GIST);
+        }
+      } catch (e) {
+        console.log(e);
+      } finally {
+        commit(types.SET_LOADING, false);
+      }
     },
 
-    [types.CREATE_GIST]({commit, dispatch}) {
+    [types.CREATE_GIST]({ commit, dispatch }) {
       let data = {
         "description": "Created by Github Notes",
         "public": true,
@@ -88,7 +86,7 @@ export const store = new Vuex.Store({
 
       commit(types.SET_LOADING, true);
 
-      api.post('/gists', data)
+      return api.post('/gists', data)
         .then(res => {
           commit(types.CREATE_GIST, res.data);
           dispatch(types.FETCH_DATA);
@@ -101,30 +99,26 @@ export const store = new Vuex.Store({
         })
     },
 
-    [types.FETCH_SELECTED_CONTENT]({commit}, param) {
+    [types.FETCH_SELECTED_CONTENT]({ commit }, param) {
       commit(types.SET_LOADING, true);
 
-      return new Promise((resolve, reject) => {
-        axios.get(param.raw_url)
-          .then(res => {
-            commit(types.FETCH_CONTENT, {
-                filename: param.filename,
-                content: res.data
-              }
-            );
-            resolve()
-          })
-          .catch(err => {
-            console.log(err);
-            reject();
-          })
-          .finally(() => {
-            commit(types.SET_LOADING, false);
-          });
-      })
+      return axios.get(param.raw_url)
+        .then(res => {
+          commit(types.FETCH_CONTENT, {
+              filename: param.filename,
+              content: res.data
+            }
+          );
+        })
+        .catch(err => {
+          console.log(err);
+        })
+        .finally(() => {
+          commit(types.SET_LOADING, false);
+        });
     },
 
-    [types.CREATE_FILE]({commit}, param) {
+    [types.CREATE_FILE]({ commit }, param) {
       let gist = this.state.data;
       let data = {
         "description": gist.description,
@@ -138,24 +132,19 @@ export const store = new Vuex.Store({
 
       commit(types.SET_LOADING, true);
 
-      return new Promise((resolve, reject) => {
-        api.post(`/gists/${gist.id}`, data)
-          .then(res => {
-            commit(types.CREATE_FILE, res.data);
-            resolve();
-          })
-          .catch(err => {
-            console.log(err);
-            reject();
-          })
-          .finally(() => {
-            commit(types.SET_LOADING, false);
-          })
-      })
+      return api.post(`/gists/${gist.id}`, data)
+        .then(res => {
+          commit(types.CREATE_FILE, res.data);
+        })
+        .catch(err => {
+          console.log(err);
+        })
+        .finally(() => {
+          commit(types.SET_LOADING, false);
+        })
     },
 
-    //Todo: the github needs few seconds to remove the file, so the page reload loads the file again that is already removed
-    async [types.REMOVE_FILE]({commit}, param) {
+    async [types.REMOVE_FILE]({ commit }, param) {
       let gist = this.state.data;
       let data = {
         "description": gist.description,
@@ -167,16 +156,14 @@ export const store = new Vuex.Store({
 
       commit(types.SET_LOADING, true);
 
-      await api.post(`/gists/${gist.id}`, data)
-        .then(res => {
-          commit(types.REMOVE_FILE, res.data)
-        })
-        .catch(err => {
-          console.log(err);
-        })
-        .finally(() => {
-          commit(types.SET_LOADING, false);
-        })
+      try {
+        const res = await api.post(`/gists/${gist.id}`, data);
+        commit(types.REMOVE_FILE, res.data)
+      } catch (e) {
+        console.log(e);
+      } finally {
+        commit(types.SET_LOADING, false);
+      }
     }
   }
 });

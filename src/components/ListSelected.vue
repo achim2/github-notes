@@ -60,7 +60,6 @@
         if (isOk) {
           try {
             await this.$store.dispatch(types.REMOVE_FILE, file);
-            //Todo: the github needs few seconds to remove the file, so the page reload loads the file again that is already removed
           } catch (e) {
             console.log(e)
           } finally {
@@ -69,7 +68,6 @@
         }
       }
     }
-
   }
 </script>
 
